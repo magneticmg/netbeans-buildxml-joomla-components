@@ -4,7 +4,8 @@ netbeans-buildxml-joomla-components
 A build file I wrote to help speed up the packaging, testing and deployment of my Joomla! components.
 
   WHAT IT DOES
-  ____________
+  ------------
+  
      
       * Zips your component into a nbproject/package/${name}.zip file
       * SFTPs your components files into the proper directories as long as remote.directory is set properly 
