@@ -13,7 +13,7 @@ A build file I wrote to help speed up the packaging, testing and deployment of m
       * Copies the files to your local Joomla! installation for testing.    
       
        SHORT PROCESS (FYI)
-       __________________
+       
       * loads the nbproject/project.properties file
       * loads the private/private.properties file
       * loads the FTP connections file that you specify in the private.properies file
@@ -21,10 +21,10 @@ A build file I wrote to help speed up the packaging, testing and deployment of m
         
       
        INSTRUCTIONS
-      ______________ 
+      -------------
       
       
-       ### Set up SCP/SFTP
+       ### Set up SCP/SFTP ###
       
       1. In Netbeans 7.2.1 the RemoteConnections directory is at:
             ${netbeans.user}\\config\\Preferences\\org\\netbeans\\modules\\php\\project\\RemoteConnections
@@ -35,7 +35,7 @@ A build file I wrote to help speed up the packaging, testing and deployment of m
           
                  password=XXX123YYY ; where XXX123YYY is your password       
       
-      ### Set up Name and Local Web Root Properties
+      ### Set up Name and Local Web Root Properties  ###
       
       3. Open your nbproject/project.properties  file and add the name of your 
          components entry point, i.e. if you component is called 'com_dog' use 'dog' as follows:
