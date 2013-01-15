@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  Netbeans Base Build for Packaging Joomla! extensions.  
+    
+     author: Cameron Barr, B.Eng @ Magnetic Merchandising Inc. 
+     
+     # WHAT IT DOES
+     
+      * Zips your component into a nbproject/package/${name}.zip file
+      * SFTPs your components files into the proper directories as long as remote.directory is set properly 
+         (You do that in your project configuration when you specify Remote)
+      * Copies the files to your local Joomla! installation for testing.    
+      
+      ## SHORT PROCESS (FYI)
+      * loads the nbproject/project.properties file
+      * loads the private/private.properties file
+      * loads the FTP connections file that you specify in the private.properies file
+      ** NOTE: You can specify your ${ftp.connections} file directly here.
+        
+      
+      ## INSTRUCTIONS
+      
+      ### Set up SCP/SFTP
+      
+      1. In Netbeans 7.2.1 the RemoteConnections directory is at:
+            ${netbeans.user}\\config\\Preferences\\org\\netbeans\\modules\\php\\project\\RemoteConnections
+         So you would place the following line into your nbproject/private/private.properties file ():           
+            ftp.connections=${netbeans.user}\\config\\Preferences\\org\\netbeans\\modules\\php\\project\\RemoteConnections
+      
+      2. In that directory find the file/connection you are using for your project and put your password on a new line as follows:
+          
+                 password=XXX123YYY ; where XXX123YYY is your password       
+      
+      ### Set up Name and Local Web Root Properties
+      
+      3. Open your nbproject/project.properties  file and add the name of your 
+         components entry point, i.e. if you component is called 'com_dog' use 'dog' as follows:
+            
+            name=dog
+      4. In the same file enter the web.root of your local testing installation, i.e.:
+                
+           C:\\xampp\\htdocs\\joomla_root\\  ; or what ever it is on linux or Mac OS is thats your flavor
+      
+         
+-->
+<project name="automated-build-tasks" default="init" basedir=".">
+    <property file="private/private.properties" />
+    <property file="project.properties" />
+    <property file="${ftp.connections}/${remote.connection}.properties" />
+
+    <property name="src" location="../"/>
+    <property name="adminsrc" location="../admin"/>
+    <property name="mediasrc" location="../media"/>
+    <property name="sitesrc" location="../site"/>
+    <property name="build" location="package"/>
+    
+    <property name="sitetest"  value="${web.root}components\com_${name}" />
+    <property name="admintest"  value="${web.root}administrator\components\com_${name}" />
+    <property name="mediatest"  value="${web.root}media\com_${name}" />
+    <property name="manifest"  value="${src}\${name}.xml" />
+    
+    <target name="init">
+        <tstamp/>
+        <mkdir dir="${build}"/>
+        <echo message="Creating ${build} directory"/>
+        <echo message="Name ${name} "/>
+        <echo message="Build ${build} "/>
+        <echo message="Web Root ${web.root} "/>
+        <echo message="Src var:  ${src} "/>
+        <echo message="SiteSrc var:  ${sitesrc} "/>
+        <echo message="Admin var:  ${adminsrc} "/>
+        <echo message="AdminTest var:  ${admintest} "/>
+        <echo message="SiteTest var:  ${sitetest} "/>
+        <echo message="Manifest:  ${manifest} "/>
+    </target>
+   <!-- run all the targets-->
+ <target name="all" depends="run-sftp,copy_site,copy_admin,copy_media,zipup">
+</target>
+    <target name="run-sftp" description="Uploading files to the various places">
+
+        <scp trust="true" todir="${user}:${password}@${host}:${remote.directory}/media/com_${name}">
+            <fileset dir="${mediasrc}">
+                <exclude name="**/*.svn/"/>
+                <exclude name="**/*.git*/"/>
+                <exclude name="**/nbproject/**"/>
+            </fileset>
+        </scp>
+        <scp trust="true" todir="${user}:${password}@${host}:${remote.directory}/components/com_${name}">
+            <fileset dir="${sitesrc}">
+                <exclude name="**/*.svn/"/>
+                <exclude name="**/*.git*/"/>
+                <exclude name="**/nbproject/**"/>
+            </fileset>
+        </scp>
+        <scp trust="true" todir="${user}:${password}@${host}:${remote.directory}/administrator/components/com_${name}">
+            <fileset dir="${adminsrc}">
+                <exclude name="**/*.svn/"/>
+                <exclude name="**/*.git*/"/>
+                <exclude name="**/nbproject/**"/>
+            </fileset>
+        </scp>
+        <echo message="${user}:${password}@${host}:${remote.directory}/media/com_${name}" />
+        <echo message="${user}:${password}@${host}:${remote.directory}/components/com_${name}" />
+        <echo message="${user}:${password}@${host}:${remote.directory}/components/com_${name}" />
+        <echoproperties />
+        
+    </target> 
+    <target name="copy_site" description="Copies files to test project.">
+        <echo message="Running build.xml. Copying files from dev to test..." />
+        <copy todir="${sitetest}">
+            <fileset dir="${sitesrc}">
+                <exclude name="**/*.svn/"/>
+                <exclude name="**/nbproject/**"/>
+            </fileset>
+        </copy>
+
+    </target>
+    <target name="copy_admin" description="Copies files to test project.">
+        <echo message="Running build.xml...." />
+        <copy todir="${admintest}">
+            <fileset dir="${adminsrc}">
+                <exclude name="**/*.svn/"/>
+                <exclude name="**/nbproject/**"/>
+               
+            </fileset>
+        </copy>
+        <copy file="${manifest}" todir="${admintest}"/>
+        
+    </target>
+    <target name="copy_media" description="Copies files to test project.">
+        <echo message="Running build.xml...." />
+        <copy todir="${mediatest}">
+            <fileset dir="${mediasrc}">
+                <exclude name="**/*.svn/"/>
+                <exclude name="**/nbproject/**"/>
+               
+            </fileset>
+        </copy>
+        
+    </target>
+    <target name="zipup"
+            description="zips the archive" >
+        <zip destfile="${build}/${name}.zip">
+            <zipfileset dir="${src}" excludes="**/.svn/,**/nbproject/**"/>
+        </zip>
+    </target>
+   
+</project>
